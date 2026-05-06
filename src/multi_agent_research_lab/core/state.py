@@ -1,9 +1,9 @@
-"""Shared state for the multi-agent workflow.
+"""Shared state for the multi-agent workflow."""
 
-Students should extend this file when adding new agents, outputs, or evaluation metrics.
-"""
+from __future__ import annotations
 
 from typing import Any
+from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
@@ -14,6 +14,7 @@ class ResearchState(BaseModel):
     """Single source of truth passed through the workflow."""
 
     request: ResearchQuery
+    run_id: str = Field(default_factory=lambda: uuid4().hex)
     iteration: int = 0
     route_history: list[str] = Field(default_factory=list)
 
@@ -21,6 +22,7 @@ class ResearchState(BaseModel):
     research_notes: str | None = None
     analysis_notes: str | None = None
     final_answer: str | None = None
+    critic_notes: str | None = None
 
     agent_results: list[AgentResult] = Field(default_factory=list)
     trace: list[dict[str, Any]] = Field(default_factory=list)
@@ -31,4 +33,5 @@ class ResearchState(BaseModel):
         self.iteration += 1
 
     def add_trace_event(self, name: str, payload: dict[str, Any]) -> None:
-        self.trace.append({"name": name, "payload": payload})
+        merged_payload = {"run_id": self.run_id, **payload}
+        self.trace.append({"name": name, "payload": merged_payload})
