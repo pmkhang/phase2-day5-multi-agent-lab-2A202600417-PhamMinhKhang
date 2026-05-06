@@ -11,7 +11,7 @@ from multi_agent_research_lab.agents import (
 )
 from multi_agent_research_lab.core.config import get_settings
 from multi_agent_research_lab.core.state import ResearchState
-from multi_agent_research_lab.observability.tracing import trace_span
+from multi_agent_research_lab.observability.tracing import flush_trace, trace_span
 
 
 class MultiAgentWorkflow:
@@ -88,4 +88,5 @@ class MultiAgentWorkflow:
             if state.errors:
                 break
 
+        flush_trace(state.run_id, query=state.request.query)
         return state

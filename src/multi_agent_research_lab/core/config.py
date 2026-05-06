@@ -19,10 +19,19 @@ class Settings(BaseSettings):
 
     openai_api_key: str | None = Field(default=None, validation_alias="OPENAI_API_KEY")
     openai_model: str = Field(default="gpt-4o-mini", validation_alias="OPENAI_MODEL")
+    ninerouter_url: str | None = Field(default=None, validation_alias="NINEROUTER_URL")
+    ninerouter_key: str | None = Field(default=None, validation_alias="NINEROUTER_KEY")
+    ninerouter_model: str = Field(default="openai/gpt-5.2", validation_alias="NINEROUTER_MODEL")
 
     langsmith_api_key: str | None = Field(default=None, validation_alias="LANGSMITH_API_KEY")
     langsmith_project: str = Field(
         default="multi-agent-research-lab", validation_alias="LANGSMITH_PROJECT"
+    )
+
+    langfuse_secret_key: str | None = Field(default=None, validation_alias="LANGFUSE_SECRET_KEY")
+    langfuse_public_key: str | None = Field(default=None, validation_alias="LANGFUSE_PUBLIC_KEY")
+    langfuse_base_url: str = Field(
+        default="https://cloud.langfuse.com", validation_alias="LANGFUSE_BASE_URL"
     )
 
     tavily_api_key: str | None = Field(default=None, validation_alias="TAVILY_API_KEY")

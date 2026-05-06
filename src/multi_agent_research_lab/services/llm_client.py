@@ -25,20 +25,29 @@ class LLMClient:
     def complete(self, system_prompt: str, user_prompt: str) -> LLMResponse:
         """Return a model completion.
 
-        Uses OpenAI when API key is configured; otherwise returns a deterministic
-        fallback response so the lab can run end-to-end in offline mode.
+        Uses 9Router when configured, otherwise OpenAI; returns deterministic
+        fallback response when no provider credentials are available.
         """
 
         settings = get_settings()
-        if not settings.openai_api_key:
+        has_ninerouter = bool(settings.ninerouter_url)
+        has_openai = bool(settings.openai_api_key)
+        if not has_ninerouter and not has_openai:
             return LLMResponse(content=(f"[offline-fallback] {user_prompt[:600]}"))
 
         try:
             from openai import OpenAI
 
-            client = OpenAI(api_key=settings.openai_api_key)
+            if has_ninerouter:
+                base_url = settings.ninerouter_url.rstrip("/") + "/v1"
+                api_key = settings.ninerouter_key or settings.openai_api_key or "not-needed"
+                model = settings.ninerouter_model
+                client = OpenAI(api_key=api_key, base_url=base_url)
+            else:
+                model = settings.openai_model
+                client = OpenAI(api_key=settings.openai_api_key)
             response = client.chat.completions.create(
-                model=settings.openai_model,
+                model=model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt},

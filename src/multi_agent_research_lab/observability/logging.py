@@ -8,3 +8,5 @@ def configure_logging(level: str = "INFO") -> None:
         level=getattr(logging, level.upper(), logging.INFO),
         format="%(asctime)s %(levelname)s %(name)s - %(message)s",
     )
+    from multi_agent_research_lab.observability.tracing import init_tracing
+    init_tracing()
